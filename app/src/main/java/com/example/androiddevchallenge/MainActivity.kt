@@ -16,46 +16,50 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.viewmodel.TimerViewModel
+import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
+
+    private val timerViewModel by viewModels<TimerViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        timerViewModel.updateCountdown(30000L)
         setContent {
             MyTheme {
-                MyApp()
+                MyApp(timerViewModel)
             }
         }
     }
+
 }
 
 // Start building your app here!
 @Composable
-fun MyApp() {
+fun MyApp(timerViewModel: TimerViewModel) {
     Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+        CountDown(timerViewModel = timerViewModel)
     }
 }
 
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
-    }
+fun CountDown(timerViewModel: TimerViewModel) {
+    val countDown = timerViewModel.countdown.observeAsState(0L)
+    Text(text = countDown.value.toString(), modifier = Modifier.padding(8.dp))
 }
