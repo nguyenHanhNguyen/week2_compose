@@ -16,23 +16,24 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
 import com.example.androiddevchallenge.viewmodel.TimerViewModel
-import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        timerViewModel.updateCountdown(30000L)
+        //timerViewModel.updateCountdown(30000L)
         setContent {
             MyTheme {
                 MyApp(timerViewModel)
@@ -54,7 +55,25 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MyApp(timerViewModel: TimerViewModel) {
     Surface(color = MaterialTheme.colors.background) {
-        CountDown(timerViewModel = timerViewModel)
+        Column {
+            CountDownInput(timerViewModel = timerViewModel)
+            CountDown(timerViewModel = timerViewModel)
+        }
+
+    }
+}
+
+@Composable
+fun CountDownInput(timerViewModel: TimerViewModel) {
+    val (text, onTextChanged) = remember { mutableStateOf("") }
+    val submit = {
+        timerViewModel.updateCountdown(text.toLong())
+    }
+    Column {
+        TextField(value = text, onValueChange = onTextChanged)
+        TextButton(onClick = submit) {
+            Text("Start")
+        }
     }
 }
 
